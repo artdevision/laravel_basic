@@ -20,3 +20,19 @@
 ## Run tests
 
 ``./vendor/bin/sail test``
+
+## Routes
+```shell
+  POST       api/comments/{id} ..................................... Api\CommentsController@update
+  DELETE     api/comments/{id} ..................................... Api\CommentsController@delete
+  GET|HEAD   api/posts .................................................. Api\PostsController@list
+  POST       api/posts/create ......................................... Api\PostsController@create
+  GET|HEAD   api/posts/{id} ............................................ Api\PostsController@index
+  POST       api/posts/{id} ........................................... Api\PostsController@update
+  DELETE     api/posts/{id} ........................................... Api\PostsController@delete
+  GET|HEAD   api/posts/{post_id}/comments .................... Api\CommentsController@getAllByPost
+  POST       api/posts/{post_id}/comments .......................... Api\CommentsController@create
+  GET|HEAD   api/user ............................................................................ 
+  GET|HEAD   api/users .................................................. Api\UsersController@list
+
+```
