@@ -12,9 +12,9 @@ final class UpdateCommentRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -25,7 +25,9 @@ final class UpdateCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'comment' => 'string',
+            'author_id' => 'exists:users,id',
+            'post_id' => 'exists:posts,id',
         ];
     }
 }

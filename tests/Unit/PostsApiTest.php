@@ -25,7 +25,7 @@ class PostsApiTest extends TestCase
 
     public function test_posts_create(): void
     {
-        static::$user = User::find(1);
+        static::$user = User::factory()->create();
 
         $postData = [
             'title' => $this->faker->text(),

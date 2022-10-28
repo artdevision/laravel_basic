@@ -9,7 +9,6 @@ use App\Http\Requests\Api\CreatePostRequest;
 use App\Http\Requests\Api\UpdatePostRequest;
 use App\Http\Transformers\PostTransformer;
 use App\Services\PostService;
-use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -43,13 +42,9 @@ final class PostsController extends ApiController
 
     public function create(CreatePostRequest $request): JsonResponse|Response
     {
-        try {
-            $model = $this->service->create($request->validated());
+        $model = $this->service->create($request->validated());
 
-            return $this->respond($model);
-        } catch (Exception $e) {
-            return $this->catchException($e);
-        }
+        return $this->respond($model);
     }
 
     public function update(int $id, UpdatePostRequest $request): JsonResponse|Response

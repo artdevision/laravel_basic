@@ -50,19 +50,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Post comments
         Route::get('/{post_id}/comments', [
-            'uses' => 'CommentsController@list',
+            'uses' => 'CommentsController@getAllByPost',
         ]);
 
         Route::post('/{post_id}/comments', [
             'uses' => 'CommentsController@create',
         ]);
+    });
 
-        Route::post('/{post_id}/comments/{id}', [
+    // Comments
+    Route::prefix('comments')->namespace('App\\Http\\Controllers\\Api')->group(static function () {
+
+        Route::post('/{id}', [
             'uses' => 'CommentsController@update',
         ]);
 
-        Route::delete('/{post_id}/comments/{id}', [
+        Route::delete('/{id}', [
             'uses' => 'CommentsController@delete',
         ]);
     });
+
 });

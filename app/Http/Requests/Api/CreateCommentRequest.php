@@ -12,9 +12,9 @@ final class CreateCommentRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,10 +22,12 @@ final class CreateCommentRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            //
+            'comment' => 'string',
+            'author_id' => 'required|exists:users,id',
+            'post_id' => 'required|exists:posts,id',
         ];
     }
 }
