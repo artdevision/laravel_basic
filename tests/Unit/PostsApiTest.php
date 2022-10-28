@@ -49,6 +49,9 @@ class PostsApiTest extends TestCase
         static::$postId = (int) $response->json('data')['id'];
     }
 
+    /**
+     * @depends test_posts_create
+     */
     public function test_posts_update(): void
     {
         $postData = [
@@ -86,26 +89,22 @@ class PostsApiTest extends TestCase
         $this->assertEquals($response->getStatusCode(), 404);
 
         // Test Update for not author
+        /** @var User $user */
         $user = User::factory()->create();
 
-        /** @var Post $post */
-        $post = Post::create([
-            'title' => $this->faker->text(),
-            'content' => $this->faker->realText(1000),
-            'author_id' => $user->id,
-        ]);
-
         $response = $this
-            ->actingAs(static::$user)
-            ->postJson('/api/posts/' . $post->id, $postData);
+            ->actingAs($user)
+            ->postJson('/api/posts/' . static::$postId, $postData);
 
         $this->assertEquals($response->getStatusCode(), 403);
 
-        $post->delete();
         $user->delete();
 
     }
 
+    /**
+     * @depends test_posts_create
+     */
     public function test_posts_list(): void
     {
         // Test not auth user
@@ -123,35 +122,31 @@ class PostsApiTest extends TestCase
         $this->assertArrayHasKey('meta', $response->json());
     }
 
+    /**
+     * @depends test_posts_create
+     */
     public function test_posts_delete(): void
     {
         // Test not auth user
         $response = $this->deleteJson('/api/posts/' . static::$postId);
         $this->assertEquals($response->getStatusCode(), 401);
 
+        // Test for not author
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->deleteJson('/api/posts/' . static::$postId);
+
+        $this->assertEquals($response->getStatusCode(), 403);
+
+        $user->delete();
+
         // Test auth user
         $response = $this
             ->actingAs(static::$user)
             ->deleteJson('/api/posts/' . static::$postId);
         $this->assertEquals($response->getStatusCode(), 204);
-
-        // Test for not author
-        $user = User::factory()->create();
-
-        /** @var Post $post */
-        $post = Post::create([
-            'title' => $this->faker->text(),
-            'content' => $this->faker->realText(1000),
-            'author_id' => $user->id,
-        ]);
-
-        $response = $this
-            ->actingAs(static::$user)
-            ->deleteJson('/api/posts/' . $post->id);
-
-        $this->assertEquals($response->getStatusCode(), 403);
-
-        $post->delete();
-        $user->delete();
     }
 }

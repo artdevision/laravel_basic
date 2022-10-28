@@ -37,10 +37,6 @@ abstract class AbstractService
             throw new ModelNotFoundException(sprintf('model %s[%d] not found', $this->modelClass, $id));
         }
 
-        try {
-            return ($model->fill($attributes)->save()) ? $model->refresh() : null;
-        } catch (Exception $e) {
-
-        }
+        return ($model->fill($attributes)->save()) ? $model->refresh() : null;
     }
 }

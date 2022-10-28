@@ -69,6 +69,9 @@ class CommentsApiTest extends TestCase
         static::$commentId = (int) $response->json('data')['id'];
     }
 
+    /**
+     * @depends test_comments_create
+     */
     public function test_comments_list(): void
     {
         // Test not auth user
@@ -86,6 +89,9 @@ class CommentsApiTest extends TestCase
         $this->assertArrayHasKey('meta', $response->json());
     }
 
+    /**
+     * @depends test_comments_create
+     */
     public function test_comments_update(): void
     {
         $commentData = [
@@ -93,10 +99,74 @@ class CommentsApiTest extends TestCase
             'post_id' => static::$post->id,
             'author_id' => static::$user->id,
         ];
+
+        // Test not auth user
+        $response = $this->postJson('/api/comments/' . static::$commentId, $commentData);
+        $this->assertEquals($response->getStatusCode(), 401);
+
+        // Test Request validation
+        $response = $this
+            ->actingAs(static::$user)
+            ->postJson('/api/comments/' . static::$commentId, array_merge($commentData, ['author_id' => 11000]));
+
+        $this->assertEquals($response->getStatusCode(), 422);
+        $this->assertArrayHasKey('errors', $response->json());
+
+        // Test save Comment
+        $response = $this
+            ->actingAs(static::$user)
+            ->postJson('/api/comments/' . static::$commentId, $commentData);
+
+        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertJson($response->content());
+        $this->assertArrayHasKey('data', $response->json());
+
+        // Test not found
+        $response = $this
+            ->actingAs(static::$user)
+            ->postJson('/api/comments/' . 10000, $commentData);
+
+        $this->assertEquals($response->getStatusCode(), 404);
+
+        // Test Update for not author
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->postJson('/api/comments/' . static::$commentId, $commentData);
+
+        $this->assertEquals($response->getStatusCode(), 403);
+
+        $user->delete();
+
     }
 
+    /**
+     * @depends test_comments_create
+     */
     public function test_comments_delete(): void
     {
+        // Test not auth user
+        $response = $this->deleteJson('/api/comments/' . static::$commentId);
+        $this->assertEquals($response->getStatusCode(), 401);
 
+        // Test for not author
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->deleteJson('/api/comments/' . static::$commentId);
+
+        $this->assertEquals($response->getStatusCode(), 403);
+
+        $user->delete();
+
+        // Test auth user
+        $response = $this
+            ->actingAs(static::$user)
+            ->deleteJson('/api/comments/' . static::$commentId);
+        $this->assertEquals($response->getStatusCode(), 204);
     }
 }

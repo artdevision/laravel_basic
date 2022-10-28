@@ -7,13 +7,15 @@ use Tests\TestCase;
 
 class UsersApiTest extends TestCase
 {
+    public static User $user;
+
     public function test_get_current_user(): void
     {
         $response = $this->getJson('/api/user');
         $this->assertEquals($response->getStatusCode(), 401);
 
-        $user = User::find(1);
-        $response = $this->actingAs($user)->getJson('/api/user');
+        static::$user = User::factory()->create();
+        $response = $this->actingAs(static::$user)->getJson('/api/user');
 
         $this->assertEquals($response->getStatusCode(), 200);
         $this->assertJson($response->content());
@@ -24,8 +26,7 @@ class UsersApiTest extends TestCase
         $response = $this->getJson('/api/users');
         $this->assertEquals($response->getStatusCode(), 401);
 
-        $user = User::find(1);
-        $response = $this->actingAs($user)
+        $response = $this->actingAs(static::$user)
             ->json('GET', '/api/users');
 
         $this->assertEquals($response->getStatusCode(), 200);
