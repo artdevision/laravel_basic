@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use OpenApi\Annotations as SWG;
 use App\Exceptions\HasNoAccessException;
 use App\Http\Transformers\ModelTransformer;
 use Exception;
@@ -20,6 +21,32 @@ use function abort;
 use function app;
 use function response;
 
+/**
+ * @SWG\Swagger(
+ *   schemes={"http"},
+ *   host="localhost:8880",
+ *   basePath="/api",
+ *   @SWG\Info(
+ *     title="Blog posts API",
+ *     version="1.0.0"
+ *   )
+ * )
+ *
+ * @SWG\Schema (
+ *     schema="Meta",
+ *     type="object",
+ *     @SWG\Property(
+ *          property="pagination",
+ *          type="object",
+ *          @SWG\Property(property="total", type="integer"),
+ *          @SWG\Property(property="count", type="integer"),
+ *          @SWG\Property(property="per_page", type="integer"),
+ *          @SWG\Property(property="current_page", type="integer"),
+ *          @SWG\Property(property="total_pages", type="integer"),
+ *          @SWG\Property(property="links", type="array", @SWG\Items(type="string"))
+ *     )
+ * )
+ */
 class ApiController extends Controller
 {
     private Manager $manager;
