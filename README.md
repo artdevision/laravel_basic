@@ -58,3 +58,7 @@ Endpoints optimized by post relation
   GET|HEAD   api/users .................................................. Api\UsersController@list
 
 ```
+
+## API Documentation
+
+http://localhost:8880/api/documentation
