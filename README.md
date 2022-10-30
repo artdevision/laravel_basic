@@ -61,4 +61,7 @@ Endpoints optimized by post relation
 
 ## API Documentation
 
+### Generate documentation
+``./vendor/bin/sail artisan l5-swagger:generate``
+
 http://localhost:8880/api/documentation
